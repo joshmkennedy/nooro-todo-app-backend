@@ -12,6 +12,12 @@ export type Task = {
   completed: boolean;
 };
 
+export type CreateTaskInput = {
+	title:string;
+	color:string;
+	completed:boolean;
+}
+
 export async function getTasks(): Promise<Task[]> {
   const tasks: Task[] = await prisma.task.findMany({
     orderBy: {
@@ -26,7 +32,7 @@ export async function getTasks(): Promise<Task[]> {
 }
 
 export async function getTask(id: number): Promise<Task> {
-  const task: Task = await prisma.task
+  const task: Task|null = await prisma.task
     .findUnique({
       where: {
         id,
@@ -44,7 +50,7 @@ export async function getTask(id: number): Promise<Task> {
   return task;
 }
 
-export async function newTask(data:Partial<Omit<Task, "id">>):Promise<Task> {
+export async function newTask(data:CreateTaskInput):Promise<Task> {
 	const task: Task = await prisma.task.create({data}).catch((e:Error)=>{
       console.error(e);
       throw new Error("DB Error");

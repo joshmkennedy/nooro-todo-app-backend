@@ -1,4 +1,4 @@
-import { Task } from "./db"
+import { CreateTaskInput } from "./db"
 
 export function DBErrorMessage(e:Error):{message:string, code:number} {
 	switch(e.toString()){
@@ -11,7 +11,7 @@ export function DBErrorMessage(e:Error):{message:string, code:number} {
 	}
 }
 
-export function validateNewTask(data:unknown):Partial<Omit<Task, "id">> {
+export function validateNewTask(data:unknown):CreateTaskInput {
 	if(typeof data !== 'object' || data == null) {
 		throw new Error("No Data was given for the new task")
 	}
@@ -22,5 +22,5 @@ export function validateNewTask(data:unknown):Partial<Omit<Task, "id">> {
 		throw new Error("Tasks require a color")
 	}
 
-	return data as Partial<Omit<Task, "id">>
+	return data as CreateTaskInput
 }
