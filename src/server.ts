@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import prisma, {
   getTask,
   getTasks,
@@ -31,34 +31,36 @@ app.get("/tasks", async (req, res) => {
 });
 
 //insert tasks
-//@ts-ignore-next-line
-app.post("/tasks/", async (req, res) => {
-  let data = req.body;
-  try {
-    const validatedData = validateNewTask(data);
-    const task = await newTask(validatedData).catch((e) => {
-      const errorConfig = DBErrorMessage(e);
-      return res
-        .status(errorConfig.code)
-        .json({ success: false, message: errorConfig.message });
-    });
+app.post(
+  "/tasks/",
+  async (req: Request, res: Response): Promise<void | any> => {
+    let data = req.body;
+    try {
+      const validatedData = validateNewTask(data);
+      const task = await newTask(validatedData).catch((e) => {
+        const errorConfig = DBErrorMessage(e);
+        res
+          .status(errorConfig.code)
+          .json({ success: false, message: errorConfig.message });
+        return null;
+      });
 
-    return res.status(201).json({
-      success: true,
-      data: task,
-    });
-  } catch (e) {
-    // failed validation
-    return res.status(400).json({
-      success: false,
-      message: e,
-    });
-  }
-});
+      res.status(201).json({
+        success: true,
+        data: task,
+      });
+    } catch (e) {
+      // failed validation
+      return res.status(400).json({
+        success: false,
+        message: e,
+      });
+    }
+  },
+);
 
 // get a task
-//@ts-ignore-next-line
-app.get("/tasks/:id", async (req, res) => {
+app.get("/tasks/:id", async (req, res): Promise<void | any> => {
   const taskId = parseInt(req.params.id, 10);
   if (isNaN(taskId)) {
     return res.status(400).json({ message: "Invalid task ID" });
@@ -78,8 +80,7 @@ app.get("/tasks/:id", async (req, res) => {
 });
 
 // update task
-//@ts-ignore-next-line
-app.put("/tasks/:id", async (req, res) => {
+app.put("/tasks/:id", async (req, res): Promise<void | any> => {
   const taskId = parseInt(req.params.id, 10);
   if (isNaN(taskId)) {
     return res.status(400).json({ message: "Invalid task ID" });
@@ -107,8 +108,8 @@ app.put("/tasks/:id", async (req, res) => {
   }
 });
 
-//@ts-ignore-next-line
-app.delete("/tasks/:id", async (req, res) => {
+//delete
+app.delete("/tasks/:id", async (req, res): Promise<void | any> => {
   const taskId = parseInt(req.params.id, 10);
   if (isNaN(taskId)) {
     return res.status(400).json({ message: "Invalid task ID" });
