@@ -11,7 +11,7 @@ export function DBErrorMessage(e:Error):{message:string, code:number} {
 	}
 }
 
-export function validateNewTask(data:unknown):CreateTaskInput {
+export function validateNewTask(data:unknown):TaskDTO {
 	if(typeof data !== 'object' || data == null) {
 		throw new Error("No Data was given for the new task")
 	}
