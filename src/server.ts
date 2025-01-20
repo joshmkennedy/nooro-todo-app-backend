@@ -6,8 +6,9 @@ const port = 3000;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+
 //HOME
-app.get("/tasks", (req: Request, res: Response) => {
+app.get("/tasks", (req, res) => {
 	let tasks = [];
 	res.status(200).json({
 		success: true,
@@ -16,7 +17,7 @@ app.get("/tasks", (req: Request, res: Response) => {
 });
 
 //update tasks
-app.post("/tasks", (req: Request<any>, res: Response<any>): any => {
+app.post("/tasks", (req, res) => {
 	let tasks = [];
 	return res.status(201).json({
 		success: true,
