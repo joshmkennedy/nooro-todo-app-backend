@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import db from "../db";
+import db  from "../db";
+import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 
 export type TaskDTO = {
   id: number;
@@ -25,24 +26,24 @@ export class TaskService {
           completed: "desc",
         },
       })
-      .catch((e: Error) => {
+      .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
         console.error(e);
-        throw new Error("DB Error");
+        throw e
       });
 
     return tasks;
   }
 
   public async getTask(id: number): Promise<TaskDTO> {
-    const task: TaskDTO | null = await this.db.task
+    const task: TaskDTO | null| void = await this.db.task
       .findUnique({
         where: {
           id,
         },
       })
-      .catch((e: Error) => {
+      .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
         console.error(e);
-        throw new Error("DB Error");
+        throw e
       });
 
     if (!task) {
@@ -52,49 +53,42 @@ export class TaskService {
     return task;
   }
 
-  public async createTask(taskData: NewTaskInput): Promise<TaskDTO> {
+  public async createTask(taskData: NewTaskInput): Promise<TaskDTO|void> {
     const data: NewTaskInput = {
       ...taskData,
       completed: taskData.completed ?? false,
     };
 
-    const task: TaskDTO = await this.db.task
+    const task: TaskDTO|void = await this.db.task
       .create({ data })
-      .catch((e: Error) => {
+      .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
         console.error(e);
-        throw new Error("DB Error");
+        throw e
       });
 
     return task;
   }
 
-  public async updateTask(id: number, data: UpdateTaskInput): Promise<TaskDTO> {
-    const task: TaskDTO = await this.db.task
+  public async updateTask(id: number, data: UpdateTaskInput): Promise<TaskDTO|void> {
+    const task: TaskDTO|void = await this.db.task
       .update({
         where: { id },
         data,
       })
-      .catch((e: Error) => {
-        if (e.toString() == "Record to update not found.") {
-          throw new Error("NO TASKS FOUND"); // using same error message as above so we can use the same error handler later
-        } else {
-          console.error(e);
-          throw new Error("DB Error");
-        }
+      .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
+        console.error(e);
+        throw e
       });
     return task;
   }
 
   public async deleteTask(id: number): Promise<void> {
-    await this.db.task.delete({ where: { id } }).catch((e: Error) => {
-      if (e.toString() == "Record to delete does not exist.") {
-        throw new Error("NO TASKS FOUND"); // using same error message as above so we can use the same error handler later
-      } else {
+    await this.db.task.delete({ where: { id } }).catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
         console.error(e);
-        throw new Error("DB Error");
-      }
-    });
+        throw e
+      });
 
     return;
   }
+
 }

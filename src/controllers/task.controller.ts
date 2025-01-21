@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import {
   NewTaskInput,
   TaskService,
@@ -31,42 +31,42 @@ export class TaskController {
   private getAllTasks = async (
     _req: Request,
     res: Response,
+		next:NextFunction
   ): Promise<void | any> => {
     try {
-      const tasks = await this.taskService.getAll();
+      const tasks = await this.taskService.getAll().catch(next);
       res.status(200).json({
         success: true,
         data: tasks,
       });
     } catch (err) {
-      res.status(400).json({ error: err });
+			next(err)
     }
   };
 
   private createTask = async (
     req: Request,
     res: Response,
+		next:NextFunction
   ): Promise<void | any> => {
     let data = req.body;
     try {
       const task = await this.taskService.createTask(
         this.validateNewTaskInput(data),
-      );
+      ).catch(next);
       res.status(201).json({
         success: true,
         data: task,
       });
     } catch (e) {
-      return res.status(400).json({
-        success: false,
-        error: e,
-      });
+			next(e)
     }
   };
 
   private updateTask = async (
     req: Request,
     res: Response,
+		next:NextFunction
   ): Promise<any | void> => {
     try {
       const taskId = parseInt(req.params.id, 10);
@@ -78,26 +78,27 @@ export class TaskController {
       const updatedTask = await this.taskService.updateTask(
         taskId,
         this.validateUpdateTaskInput(updates),
-      );
+      ).catch(next);
       res.status(200).json(updatedTask);
     } catch (err) {
-      res.status(400).json({ error: err });
+			next(err)
     }
   };
 
   private deleteTask = async (
     req: Request,
     res: Response,
+		next:NextFunction
   ): Promise<void | any> => {
     try {
       const taskId = parseInt(req.params.id, 10);
       if (isNaN(taskId)) {
         return res.status(400).json({ message: "Invalid task ID" });
       }
-      await this.taskService.deleteTask(taskId);
+      await this.taskService.deleteTask(taskId).catch(next);
       res.status(204).send();
     } catch (err) {
-      res.status(404).json({ error: err });
+			next(err)
     }
   };
 
