@@ -1,11 +1,10 @@
 import db from "./db";
-import {App} from "./app"
+import "dotenv/config";
+import { App } from "./app";
 
-
-const app = new App(3100)
+const app = new App(parseInt(process.env.PORT ?? "3100"));
 // Start the server
-const server = app.listen()
-
+const server = app.listen();
 
 async function shutdown() {
   console.log("Shutting down gracefully...");
