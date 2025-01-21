@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cors from "cors"
 import { TaskController } from "./controllers/task.controller";
 import { Server } from "http";
 
@@ -15,8 +16,12 @@ export class App {
   }
 
   private initializeMiddlewares() {
+		this.app.use((re,res, next)=>{
+			console.log(re.body)
+			next()
+		})
     this.app.use(express.json());
-    // Add any other common middleware here (e.g., cors, helmet, etc.)
+		this.app.use(cors({origin:"*"}))// fix in production
   }
 
   private initializeControllers() {

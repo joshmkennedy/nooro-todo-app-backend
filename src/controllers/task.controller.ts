@@ -18,6 +18,8 @@ export class TaskController {
     // GET /tasks
     this.router.get("/", this.getAllTasks);
 
+		this.router.get("/:id", this.getTask)
+
     // POST /tasks
     this.router.post("/", this.createTask);
 
@@ -43,6 +45,22 @@ export class TaskController {
 			next(err)
     }
   };
+
+	private getTask = async (req:Request, res:Response, next:NextFunction):Promise<void|any> =>{
+		try{
+      const taskId = parseInt(req.params.id, 10);
+      if (isNaN(taskId)) {
+        return res.status(400).json({ message: "Invalid task ID" });
+      }
+      const task = await this.taskService.getTask(taskId).catch(next);
+      res.status(200).json({
+        success: true,
+        data: task,
+      });
+		} catch(err){
+			next(err)
+		}
+	}
 
   private createTask = async (
     req: Request,
@@ -75,6 +93,7 @@ export class TaskController {
       }
 
       const updates = req.body; // { title?, color?, completed? }
+			console.log(updates)
       const updatedTask = await this.taskService.updateTask(
         taskId,
         this.validateUpdateTaskInput(updates),
