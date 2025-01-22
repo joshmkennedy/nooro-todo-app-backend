@@ -23,7 +23,7 @@ export class TaskService {
     const tasks: TaskDTO[] = await this.db.task
       .findMany({
         orderBy: {
-          completed: "desc",
+          completed: "asc",
         },
       })
       .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
