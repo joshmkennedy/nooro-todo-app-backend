@@ -1,5 +1,5 @@
 import express, { Application } from "express";
-import cors from "cors"
+import cors from "cors";
 import { TaskController } from "./controllers/task.controller";
 import { Server } from "http";
 
@@ -16,12 +16,8 @@ export class App {
   }
 
   private initializeMiddlewares() {
-		this.app.use((re,res, next)=>{
-			console.log(re.body)
-			next()
-		})
     this.app.use(express.json());
-		this.app.use(cors({origin:"*"}))// fix in production
+    this.app.use(cors({ origin: "*" })); // fix in production
   }
 
   private initializeControllers() {
@@ -31,10 +27,10 @@ export class App {
     // Add other controllers here
   }
 
+
   public listen(): Server {
     return this.app.listen(this.port, () => {
       console.log(`Server running on http://localhost:${this.port}`);
     });
   }
-
 }
