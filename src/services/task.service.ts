@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient  } from "@prisma/client";
 import db  from "../db";
 import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 
@@ -7,6 +7,7 @@ export type TaskDTO = {
   title: string;
   color: string;
   completed?: boolean;
+	userId:string;
 };
 
 export type NewTaskInput = Omit<TaskDTO, "id">;

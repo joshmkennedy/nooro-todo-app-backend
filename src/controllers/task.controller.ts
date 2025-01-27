@@ -142,9 +142,11 @@ export class TaskController {
         if (error.message === "NO TASKS FOUND") {
           return response.status(404).send("Not Found");
         }
+
         if(error instanceof PrismaClientKnownRequestError ){
         	return response.status(500).send(error.meta?.cause)
         }
+
 				if(error instanceof PrismaClientUnknownRequestError){
 					return response.status(500).send(error.message)
 				}
