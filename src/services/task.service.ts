@@ -74,7 +74,7 @@ export class TaskService {
   public async updateTask(id: number, data: UpdateTaskInput): Promise<TaskDTO|void> {
     const task: TaskDTO|void = await this.db.task
       .update({
-        where: { id },
+        where: { id, userId:data.userId },
         data,
       })
       .catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
@@ -84,8 +84,8 @@ export class TaskService {
     return task;
   }
 
-  public async deleteTask(id: number): Promise<void> {
-    await this.db.task.delete({ where: { id } }).catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
+  public async deleteTask(id: number, userId:string): Promise<void> {
+    await this.db.task.delete({ where: { id, userId } }).catch((e: PrismaClientUnknownRequestError|PrismaClientKnownRequestError) => {
         console.error(e);
         throw e
       });

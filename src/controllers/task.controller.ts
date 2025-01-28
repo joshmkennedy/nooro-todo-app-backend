@@ -40,13 +40,17 @@ export class TaskController {
   }
 
   private getAllTasks = async (
-    _req: Request,
-    res: Response,
+    request: Request,
+    response: Response,
     next: NextFunction,
   ): Promise<void | any> => {
+		// check if logged in
+		if(!request.user?.userId){
+			next(new Error("Not Authorized"))
+		} 
     try {
       const tasks = await this.taskService.getAll().catch(next);
-      res.status(200).json({
+      response.status(200).json({
         success: true,
         data: tasks,
       });
@@ -56,18 +60,22 @@ export class TaskController {
   };
 
   private getTask = async (
-    req: Request,
-    res: Response,
+    request: Request,
+    response: Response,
     next: NextFunction,
   ): Promise<void | any> => {
+		// check if logged in
+		if(!request.user?.userId){
+			next(new Error("Not Authorized"))
+		} 
     try {
-      const taskId = parseInt(req.params.id, 10);
+      const taskId = parseInt(request.params.id, 10);
       if (isNaN(taskId)) {
-        return res.status(400).json({ message: "Invalid task ID" });
+        return response.status(400).json({ message: "Invalid task ID" });
       }
       const task = await this.taskService.getTask(taskId).catch(next);
       if (task) {
-        res.status(200).json({
+        response.status(200).json({
           success: true,
           data: task,
         });
@@ -78,16 +86,22 @@ export class TaskController {
   };
 
   private createTask = async (
-    req: Request,
-    res: Response,
+    request: Request,
+    response: Response,
     next: NextFunction,
   ): Promise<void | any> => {
-    let data = req.body;
+		// check if logged in
+		if(!request.user?.userId){
+			next(new Error("Not Authorized"))
+		} 
+
+    let data = request.body;
+		data.userId = request.user?.userId
     try {
       const task = await this.taskService
         .createTask(this.validateNewTaskInput(data))
         .catch(next);
-      res.status(201).json({
+      response.status(201).json({
         success: true,
         data: task,
       });
@@ -97,39 +111,52 @@ export class TaskController {
   };
 
   private updateTask = async (
-    req: Request,
-    res: Response,
+    request: Request,
+		response: Response,
     next: NextFunction,
   ): Promise<any | void> => {
+		// check if logged in
+		if(!request.user?.userId){
+			next(new Error("Not Authorized"))
+		} 
+
+    const updates = request.body; // { title?, color?, completed? }
+		updates.userId = request.user?.userId
+
+
     try {
-      const taskId = parseInt(req.params.id, 10);
+      const taskId = parseInt(request.params.id, 10);
       if (isNaN(taskId)) {
-        return res.status(400).json({ message: "Invalid task ID" });
+        return response.status(400).json({ message: "Invalid task ID" });
       }
 
-      const updates = req.body; // { title?, color?, completed? }
-      console.log(updates);
       const updatedTask = await this.taskService
         .updateTask(taskId, this.validateUpdateTaskInput(updates))
         .catch(next);
-      res.status(200).json(updatedTask);
+      response.status(200).json(updatedTask);
     } catch (err) {
       next(err);
     }
   };
 
   private deleteTask = async (
-    req: Request,
-    res: Response,
+    request: Request,
+    response: Response,
     next: NextFunction,
   ): Promise<void | any> => {
+		// check if logged in
+		if(!request.user?.userId){
+			next(new Error("Not Authorized"))
+			return
+		} 
+
     try {
-      const taskId = parseInt(req.params.id, 10);
+      const taskId = parseInt(request.params.id, 10);
       if (isNaN(taskId)) {
-        return res.status(400).json({ message: "Invalid task ID" });
+        return response.status(400).json({ message: "Invalid task ID" });
       }
-      await this.taskService.deleteTask(taskId).catch(next);
-      res.status(204).send();
+      await this.taskService.deleteTask(taskId, request.user.userId).catch(next);
+      response.status(204).send();
     } catch (err) {
       next(err);
     }
