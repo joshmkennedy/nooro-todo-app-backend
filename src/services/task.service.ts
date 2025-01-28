@@ -35,6 +35,7 @@ export class TaskService {
     return tasks;
   }
 
+	//@TODO add userId as parameter to ensure users own task
   public async getTask(id: number): Promise<TaskDTO> {
     const task: TaskDTO | null| void = await this.db.task
       .findUnique({

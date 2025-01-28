@@ -8,18 +8,22 @@ import {
   PrismaClientKnownRequestError,
   PrismaClientUnknownRequestError,
 } from "@prisma/client/runtime/library";
+import { AuthMiddleware } from "../middleware/auth.middleware";
 
 export class TaskController {
   public router: Router = Router();
   private taskService: TaskService;
+	private auth: AuthMiddleware;
 
   constructor() {
+		this.auth = new AuthMiddleware();
     this.taskService = new TaskService();
     this.initializeRoutes();
     this.initializeErrorHandling();
   }
 
   private initializeRoutes() {
+		this.router.use(this.auth.initialize)
     // GET /tasks
     this.router.get("/", this.getAllTasks);
 
