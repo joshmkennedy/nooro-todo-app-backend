@@ -87,6 +87,6 @@ export class AuthController {
     response: Response,
     next: NextFunction,
   ) => {
-		return response.clearCookie("token")
+		return response.clearCookie("token").send()
 	};
 }

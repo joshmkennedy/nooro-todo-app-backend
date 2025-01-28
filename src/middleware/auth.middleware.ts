@@ -16,12 +16,10 @@ export class AuthMiddleware {
       let token = request.cookies.token; // cookie name: "token"
       if (!token) {
 				const authToken = request.headers['authorization']
-				console.log(authToken)
 				if(!authToken){
         return response.status(401).json({ error: "No token provided" });
 				}
 				token = authToken.replace("Bearer ", "")
-				console.log(token)
       }
 			
 
