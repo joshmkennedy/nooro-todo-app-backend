@@ -8,6 +8,7 @@ export type TaskDTO = {
   color: string;
   completed?: boolean;
 	userId:string;
+	createdAt?:Date;
 };
 
 export type NewTaskInput = Omit<TaskDTO, "id">;
@@ -32,6 +33,7 @@ export class TaskService {
         throw e
       });
 
+			console.log(tasks)
     return tasks;
   }
 

@@ -14,6 +14,7 @@ export class AuthController {
   constructor() {
     this.db = db;
     this.initialize();
+    this.initializeErrorHandling();
   }
 
   public initialize() {
@@ -75,8 +76,8 @@ export class AuthController {
     response: Response,
     next: NextFunction,
   ) => {
-		next(new Error("NOT IMPLEMENTED"))
-	};
+    next(new Error("NOT IMPLEMENTED"));
+  };
 
   public signout: (
     request: Request,
@@ -87,6 +88,19 @@ export class AuthController {
     response: Response,
     next: NextFunction,
   ) => {
-		return response.clearCookie("token").send()
-	};
+    return response.clearCookie("token").send();
+  };
+
+  private initializeErrorHandling() {
+    this.router.use(
+      (
+        error: any,
+        request: Request,
+        response: Response,
+        next: NextFunction,
+      ): any | null => {
+				response.status(400).send(error.message)
+      },
+    );
+  }
 }
