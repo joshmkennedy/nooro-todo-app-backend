@@ -1,7 +1,9 @@
 import express, { Application } from "express";
+import cookieParser from "cookie-parser"
 import cors from "cors";
 import { TaskController } from "./controllers/task.controller";
 import { Server } from "http";
+import { AuthController } from "./controllers/auth.controller";
 
 export class App {
   public app: Application;
@@ -18,12 +20,19 @@ export class App {
   private initializeMiddlewares() {
     this.app.use(express.json());
     this.app.use(cors({ origin: "*" })); // fix in production
+		this.app.use(cookieParser())
+		this.app.use((req,res, next)=>{
+			console.log(req.url)
+			next()
+		})
   }
 
   private initializeControllers() {
     // Instantiate your controllers and mount them
     const taskController = new TaskController();
     this.app.use("/tasks", taskController.router);
+		const authController = new AuthController();
+		this.app.use("/auth", authController.router)
     // Add other controllers here
   }
 
