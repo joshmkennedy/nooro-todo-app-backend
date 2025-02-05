@@ -19,12 +19,8 @@ export class App {
 
   private initializeMiddlewares() {
     this.app.use(express.json());
-    this.app.use(cors({ origin: "*" })); // fix in production
+    this.app.use(cors({ origin: "*" })); //TODO: fix in production
 		this.app.use(cookieParser())
-		this.app.use((req,res, next)=>{
-			console.log(req.url)
-			next()
-		})
   }
 
   private initializeControllers() {
